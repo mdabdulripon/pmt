@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Store } from '@ngrx/store';
 
 import { Subscription } from 'rxjs';
 
@@ -6,50 +7,54 @@ import { Product } from '../product';
 import { ProductService } from '../product.service';
 
 @Component({
-  selector: 'app-product-list',
-  templateUrl: './product-list.component.html',
-  styleUrls: ['./product-list.component.scss']
+	selector: 'app-product-list',
+	templateUrl: './product-list.component.html',
+	styleUrls: ['./product-list.component.scss']
 })
 export class ProductListComponent implements OnInit, OnDestroy {
-  pageTitle = 'Products';
-  errorMessage: string;
+	pageTitle = 'Products';
+	errorMessage: string;
+	displayCode: boolean;
+	products: Product[];
 
-  displayCode: boolean;
+	selectedProduct: Product | null;
+	sub: Subscription;
 
-  products: Product[];
+	constructor(private store: Store<any>, private productService: ProductService) { }
 
-  // Used to highlight the selected product in the list
-  // Used to highlight the selected product in the list
-  selectedProduct: Product | null;
-  sub: Subscription;
+	ngOnInit(): void {
+		this.sub = this.productService.selectedProductChanges$.subscribe(
+			(currentProduct) => this.selectedProduct = currentProduct
+		);
 
-  constructor(private productService: ProductService) { }
+		this.productService.getProducts().subscribe({
+			next: (products: Product[]) => this.products = products,
+			error: err => this.errorMessage = err
+		});
 
-  ngOnInit(): void {
-    this.sub = this.productService.selectedProductChanges$.subscribe(
-      currentProduct => this.selectedProduct = currentProduct
-    );
+		this.store.select('products').subscribe(product => {
+			if(product) {
+				this.displayCode = product.showProductCode;
+			}
+		})
+	}
 
-    this.productService.getProducts().subscribe({
-      next: (products: Product[]) => this.products = products,
-      error: err => this.errorMessage = err
-    });
-  }
+	ngOnDestroy(): void {
+		this.sub.unsubscribe();
+	}
 
-  ngOnDestroy(): void {
-    this.sub.unsubscribe();
-  }
+	checkChanged(): void {
+		this.store.dispatch(
+			{type: '[Product] Toggle Product Code'}
+		)
+	}
 
-  checkChanged(): void {
-    this.displayCode = !this.displayCode;
-  }
+	newProduct(): void {
+		this.productService.changeSelectedProduct(this.productService.newProduct());
+	}
 
-  newProduct(): void {
-    this.productService.changeSelectedProduct(this.productService.newProduct());
-  }
-
-  productSelected(product: Product): void {
-    this.productService.changeSelectedProduct(product);
-  }
+	productSelected(product: Product): void {
+		this.productService.changeSelectedProduct(product);
+	}
 
 }

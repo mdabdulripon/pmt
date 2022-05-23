@@ -3,7 +3,6 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MenuComponent } from './home/menu.component';
@@ -12,6 +11,7 @@ import { ShellComponent } from './home/shell.component';
 import { WelcomeComponent } from './home/welcome.component';
 import { ProductData } from './products/product-data';
 import { UserModule } from './user/user.module';
+import { StoreModule } from '@ngrx/store';
 
 @NgModule({
   declarations: [
@@ -26,7 +26,8 @@ import { UserModule } from './user/user.module';
     HttpClientModule,
     HttpClientInMemoryWebApiModule.forRoot(ProductData),
     UserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    StoreModule.forRoot({}, {})
   ],
   providers: [],
   bootstrap: [AppComponent]
