@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { PageNotFoundComponent } from './home/page-not-found.component';
 import { ShellComponent } from './home/shell.component';
 import { WelcomeComponent } from './home/welcome.component';
+import { AuthGuard } from './user/auth-guard.service';
 
 const routes: Routes = [
 	{
@@ -15,7 +16,7 @@ const routes: Routes = [
 			},
 			{
 				path: 'products',
-				// canActivate: [AuthGuard],
+				canActivate: [AuthGuard],
 				loadChildren: () => import('./products/product.module').then(m => m.ProductModule)
 			},
 			{ 
