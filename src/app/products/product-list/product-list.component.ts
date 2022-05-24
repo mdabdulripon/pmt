@@ -32,9 +32,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
 		});
 
 		this.store.select('products').subscribe(product => {
-			if(product) {
-				this.displayCode = product.showProductCode;
-			}
+			this.displayCode = product.showProductCode;
 		})
 	}
 
